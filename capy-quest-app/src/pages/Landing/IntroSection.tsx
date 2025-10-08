@@ -56,7 +56,7 @@ export default function IntroSection() {
 
   return (
     <>
-      <section ref={introRef} className="intro-section">
+      <section ref={introRef} className="intro-section"  id='background-mask'>
         <div className="intro-container">
           {/* Contenido de texto */}
           <div className="intro-content">
