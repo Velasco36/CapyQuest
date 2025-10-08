@@ -1,0 +1,10 @@
+
+      /* treasurezone */
+
+      @media (max-width: 576px) {
+
+        .W-NftZone {
+          min-width: 125px;
+          width: auto;
+        }
+      }
