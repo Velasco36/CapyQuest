@@ -25,6 +25,34 @@ body {
   overflow-x: hidden;
 }
 
+   body:has(#background-mask) {
+          background-color: #000;
+        }
+        #background-mask {
+
+          background-color: #000; /* Fondo negro */
+
+
+          mask-image: url('./../../assets/circle.svg');;
+          mask-position: center;
+          mask-repeat: no-repeat;
+          mask-size: 50px;
+
+          animation: lock-reveal 10s forwards ease-in-out ;
+        }
+
+        @keyframes lock-reveal {
+          0% {
+            mask-size: 50px;
+
+          }
+          100% {
+            mask-size: 1000vh;
+
+          }
+        }
+
+
 /* Enhanced Typography with Gradient Effects */
 h1 {
   font-size: 4rem;
