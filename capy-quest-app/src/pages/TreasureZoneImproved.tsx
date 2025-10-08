@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { MapPin, Navigation, Trash2, Play, ChartNetwork, 
+import { MapPin, Navigation, Trash2, Play, ChartNetwork,
   Loader, Trophy, Zap, Target, Map as MapIcon, ChevronDown, ChevronUp } from 'lucide-react'
 import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -18,6 +18,9 @@ import ExploreCapyImage from "@/assets/NFTs/ExploreCapy.png"
 import WiseCapyImage from "@/assets/NFTs/WiseCapy.png"
 import LegendaryCapyImage from "@/assets/NFTs/LegendaryCapy.png"
 import GoldenCapyImage from "@/assets/NFTs/GoldenCapy.png"
+
+
+import './TreasureZoneImproved.css'
 
 interface Coordinates {
   lng: number
@@ -47,7 +50,7 @@ const rarityImages = {
 // Mapeo de rarezas a nombres
 const rarityNames = {
   0: "Capy Bebe",
-  1: "Capy Explorador", 
+  1: "Capy Explorador",
   2: "Capy Sabio",
   3: "Capy Legendario",
   4: "Capy Dorado"
@@ -56,40 +59,40 @@ const rarityNames = {
 export default function TreasureZoneImproved() {
   // Usar el store de Zustand para la ubicación
   const { userLocation, locationError: storeLocationError, requestLocation } = useUserLocationStore();
-  
+
   // Estados principales
   const [viewState, setViewState] = useState({
     longitude: -122.4,
     latitude: 37.8,
     zoom: 14
   })
-  
+
   // Estados de dibujo y polígonos
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPolygon, setCurrentPolygon] = useState<Coordinates[]>([])
   const [savedPolygons, setSavedPolygons] = useState<PolygonData[]>([])
   const [polygonName, setPolygonName] = useState('')
-  
+
   // Estados de distribución - MANTENEMOS TODA LA FUNCIONALIDAD
   const [distributionMode, setDistributionMode] = useState<'single' | 'polygon'>('single')
   const [selectedNFTs, setSelectedNFTs] = useState<bigint[]>([])
   const [showNFTSelector, setShowNFTSelector] = useState(false)
   const [pendingClickLocation, setPendingClickLocation] = useState<Coordinates | null>(null)
   const [showDistributionMenu, setShowDistributionMenu] = useState(false)
-  
+
   // Estados de UI - MANTENEMOS LAS 3 PESTAÑAS
   const [activeTab, setActiveTab] = useState<'distribute' | 'polygons' | 'active'>('distribute')
   const [showLocationStatus, setShowLocationStatus] = useState(true)
   const [isInitializingLocation, setIsInitializingLocation] = useState(true)
-  
+
   const mapRef = useRef<any>(null)
   const router = useRouter()
 
   // Usar el hook para NFT distribuidos - INCLUIMOS distributeNFT y generateRandomLocationInPolygon
-  const { 
-    nftState, 
-    loading, 
-    distributeNFT, 
+  const {
+    nftState,
+    loading,
+    distributeNFT,
     generateRandomLocationInPolygon
   } = useNFTDistributed()
 
@@ -97,7 +100,7 @@ export default function TreasureZoneImproved() {
   useEffect(() => {
     const initializeLocation = async () => {
       setIsInitializingLocation(true);
-      
+
       // Si ya tenemos ubicación en el store, actualizar la vista
       if (userLocation) {
         setViewState(prev => ({
@@ -109,7 +112,7 @@ export default function TreasureZoneImproved() {
         setIsInitializingLocation(false);
         return;
       }
-      
+
       // Si no hay ubicación, solicitarla
       await requestLocation();
       setIsInitializingLocation(false);
@@ -133,9 +136,9 @@ export default function TreasureZoneImproved() {
   // Manejo de clics en el mapa - MANTENEMOS LÓGICA DE DISTRIBUCIÓN
   const handleMapClick = useCallback((event: any) => {
     if (!event.lngLat) return
-    
+
     const { lng, lat } = event.lngLat
-    
+
     if (isDrawing) {
       setCurrentPolygon(prev => [...prev, { lng, lat }])
     } else if (distributionMode === 'single' && selectedNFTs.length > 0 && activeTab === 'distribute') {
@@ -260,7 +263,7 @@ export default function TreasureZoneImproved() {
   // Generar GeoJSON para el polígono actual
   const getPolygonGeoJSON = () => {
     if (currentPolygon.length < 3) return null
-    
+
     return {
       type: 'Feature',
       geometry: {
@@ -323,6 +326,7 @@ export default function TreasureZoneImproved() {
         </div>
       </div>
 
+
       {/* Map Container */}
       <div className="fixed top-24 bottom-0 left-0 right-0">
         <Map
@@ -344,7 +348,7 @@ export default function TreasureZoneImproved() {
               <div className="w-4 h-4 bg-blue-500 border-2 border-white rounded-full shadow-lg animate-pulse"></div>
             </Marker>
           )}
-          
+
           {/* Current Polygon Drawing */}
           {activeTab === 'polygons' && currentPolygon.length > 0 && (
             <Source
@@ -363,7 +367,7 @@ export default function TreasureZoneImproved() {
               />
             </Source>
           )}
-          
+
           {/* Saved Polygons */}
           {activeTab === 'polygons' && savedPolygons.length > 0 && (
             <Source
@@ -392,11 +396,11 @@ export default function TreasureZoneImproved() {
               />
             </Source>
           )}
-          
+
           {/* Distributed NFTs */}
           {activeTab === 'active' && nftState.distributedNFTs.map((nft) => {
             const [lat, lng] = nft.location.split(',').map(parseFloat)
-            
+
             return (
               <Marker
                 key={nft.tokenId.toString()}
@@ -409,9 +413,9 @@ export default function TreasureZoneImproved() {
                 }}
               >
                 <div className="w-10 h-10 rounded-full border-2 border-yellow-400 overflow-hidden shadow-lg">
-                  <Image 
+                  <Image
                     src={Capy}
-                    alt="NFT" 
+                    alt="NFT"
                     width={40}
                     height={40}
                     className="w-full h-full object-cover"
@@ -420,7 +424,7 @@ export default function TreasureZoneImproved() {
               </Marker>
             )
           })}
-          
+
           {/* Pending Click Location - MANTENEMOS PARA DISTRIBUCIÓN */}
           {activeTab === 'distribute' && pendingClickLocation && (
             <Marker
@@ -432,30 +436,25 @@ export default function TreasureZoneImproved() {
             </Marker>
           )}
         </Map>
-        
+
         {/* Location Status */}
         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md">
           <div className="flex items-center gap-2">
+          {!storeLocationError && (
             <Navigation className={`w-4 h-4 ${userLocation ? 'text-green-500' : 'text-gray-400'}`} />
-            <span className="text-sm font-medium text-gray-700">
-              {userLocation ? 'Ubicación Activa' : 'Ubicación Inactiva'}
-            </span>
-            <button 
-              onClick={() => setShowLocationStatus(!showLocationStatus)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              {showLocationStatus ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
+          )}
+          <Navigation className={`w-4 h-4 ${storeLocationError ? 'text-red-500' : 'hidden'}`} />
+
           </div>
-          
+
           {showLocationStatus && (
-            <div className="mt-2">
+            <div className="">
               {isInitializingLocation ? (
                 <p className="text-gray-500 text-xs">Obteniendo ubicación...</p>
               ) : storeLocationError ? (
                 <div>
                   <p className="text-red-500 text-xs">{storeLocationError}</p>
-                  <button 
+                  <button
                     onClick={handleRetryLocation}
                     className="text-blue-500 text-xs mt-1 hover:underline"
                   >
@@ -463,13 +462,11 @@ export default function TreasureZoneImproved() {
                   </button>
                 </div>
               ) : userLocation ? (
-                <p className="text-green-600 text-xs font-mono">
-                  {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
-                </p>
+                <></>
               ) : (
                 <div>
                   <p className="text-gray-500 text-xs">Ubicación no disponible</p>
-                  <button 
+                  <button
                     onClick={handleRetryLocation}
                     className="text-blue-500 text-xs mt-1 hover:underline"
                   >
@@ -482,7 +479,7 @@ export default function TreasureZoneImproved() {
         </div>
 
         {/* Controles específicos por pestaña */}
-        
+
         {/* Pestaña Distribuir - MANTENEMOS COMPLETA */}
         {activeTab === 'distribute' && (
           <>
@@ -516,15 +513,27 @@ export default function TreasureZoneImproved() {
             </div>
 
             {/* NFT Selection Panel */}
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-md overflow-hidden w-64">
-              <div 
+            <div className="absolute top-4 left-4  bg-white/90 backdrop-blur-sm rounded-lg shadow-md overflow-hidden w-64 W-NftZone">
+              <div
                 className="p-3 flex items-center justify-between cursor-pointer"
                 onClick={() => setShowNFTSelector(!showNFTSelector)}
               >
-                <h3 className="font-semibold text-amber-800 text-sm">Mis NFTs ({nftState.userNFTs.length})</h3>
+                <h3 className="font-semibold text-amber-800 text-sm hidden sm:block">Mis NFTs ({nftState.userNFTs.length})</h3>
+                <div className="sm:hidden  flex justify-center items-center ">
+
+                    <Image
+                      src="/img/capy.png"
+                      alt="capy"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10"
+                      priority
+                    />
+                  <h3> ({nftState.userNFTs.length})</h3>
+                </div>
                 {showNFTSelector ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </div>
-              
+
               {showNFTSelector && (
                 <div className="max-h-60 overflow-y-auto border-t">
                   {loading ? (
@@ -532,20 +541,23 @@ export default function TreasureZoneImproved() {
                       <Loader className="w-5 h-5 animate-spin text-yellow-500" />
                     </div>
                   ) : nftState.userNFTs.filter(nft => !nft.isActiveOnMap).length === 0 ? (
-                    <p className="p-3 text-amber-600 text-xs">No tienes NFTs disponibles para distribuir</p>
+                    <>
+                      <p className="p-3 text-amber-600 text-xs hidden sm:block">No tienes NFTs disponibles para distribuir</p>
+                      <p className="p-3 text-amber-600 text-xs sm:hidden block">NFTs (0)</p>
+                    </>
                   ) : (
                     <div className="space-y-1 p-2">
                       {nftState.userNFTs.filter(nft => !nft.isActiveOnMap).map(nft => {
                         const nftImage = getNFTImage(nft.rarity)
                         const nftName = getNFTName(nft.rarity)
-                        
+
                         return (
                           <div
                             key={nft.tokenId.toString()}
                             onClick={() => {
                               const tokenId = nft.tokenId
-                              setSelectedNFTs(prev => 
-                                prev.includes(tokenId) 
+                              setSelectedNFTs(prev =>
+                                prev.includes(tokenId)
                                   ? prev.filter(id => id !== tokenId)
                                   : [...prev, tokenId]
                               )
@@ -558,8 +570,8 @@ export default function TreasureZoneImproved() {
                           >
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full border-2 border-yellow-400 overflow-hidden">
-                                <Image 
-                                  src={nftImage} 
+                                <Image
+                                  src={nftImage}
                                   alt={nftName}
                                   width={32}
                                   height={32}
@@ -585,7 +597,7 @@ export default function TreasureZoneImproved() {
                       })}
                     </div>
                   )}
-                  
+
                   {selectedNFTs.length > 0 && (
                     <div className="p-2 bg-yellow-50 border-t">
                       <p className="text-xs text-yellow-700 text-center">
@@ -601,12 +613,12 @@ export default function TreasureZoneImproved() {
             {selectedNFTs.length > 0 && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-3 shadow-lg max-w-md">
                 <p className="text-amber-900 text-sm font-medium text-center">
-                  {distributionMode === 'single' 
+                  {distributionMode === 'single'
                     ? `Toca el mapa para distribuir ${selectedNFTs.length} NFT(s)`
                     : `Selecciona un perímetro para distribuir ${selectedNFTs.length} NFT(s)`
                   }
                 </p>
-                
+
                 {distributionMode === 'polygon' && savedPolygons.length > 0 && (
                   <div className="mt-2 bg-white/30 rounded-lg p-2">
                     <p className="text-amber-900 text-xs font-medium mb-1">Perímetros disponibles:</p>
@@ -635,7 +647,7 @@ export default function TreasureZoneImproved() {
             {/* Drawing Controls */}
             <div className="absolute top-20 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md w-48">
               <h3 className="font-semibold text-amber-800 mb-2 text-sm">Crear Perímetro</h3>
-              
+
               {!isDrawing ? (
                 <button
                   onClick={startDrawing}
@@ -654,7 +666,7 @@ export default function TreasureZoneImproved() {
                       Puntos: {currentPolygon.length} {currentPolygon.length >= 3 && '✓'}
                     </p>
                   </div>
-                  
+
                   <input
                     type="text"
                     placeholder="Nombre del perímetro"
@@ -662,7 +674,7 @@ export default function TreasureZoneImproved() {
                     onChange={(e) => setPolygonName(e.target.value)}
                     className="w-full border border-amber-300 rounded-lg p-2 text-sm focus:border-yellow-500 focus:outline-none"
                   />
-                  
+
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={finishDrawing}
@@ -718,11 +730,11 @@ export default function TreasureZoneImproved() {
         {activeTab === 'active' && (
           <>
             {/* Active NFTs Panel */}
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-md overflow-hidden w-64">
+            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-md overflow-hidden w-64 W-NftZone">
               <h3 className="font-semibold text-amber-800 p-3 text-sm border-b">
                 NFTs en el Mapa ({nftState.distributedNFTs.length})
               </h3>
-              
+
               {loading ? (
                 <div className="flex justify-center py-4">
                   <Loader className="w-5 h-5 animate-spin text-yellow-500" />
@@ -733,12 +745,12 @@ export default function TreasureZoneImproved() {
                 <div className="overflow-y-auto max-h-60">
                   {nftState.distributedNFTs.map(nft => {
                     const nftName = getNFTName(nft.rarity)
-                    
+
                     return (
                       <div key={nft.tokenId.toString()} className="flex items-center justify-between p-2 border-b">
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 rounded-full border-2 border-yellow-400 overflow-hidden">
-                            <Image 
+                            <Image
                               src={Capy}
                               alt={nftName}
                               width={32}
@@ -756,7 +768,8 @@ export default function TreasureZoneImproved() {
                           className="bg-blue-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1 hover:bg-blue-600"
                         >
                           <MapPin className="w-3 h-3" />
-                          Ver
+                          <span className='hidden sm:block'>Ver</span>
+
                         </button>
                       </div>
                     )
@@ -770,8 +783,8 @@ export default function TreasureZoneImproved() {
         {/* Map Instructions - ACTUALIZADAS CON DISTRIBUCIÓN */}
         <div className="absolute bottom-4 right-4 bg-black/70 text-white rounded-lg p-2 max-w-xs">
           <p className="text-xs">
-            {activeTab === 'polygons' && isDrawing 
-              ? 'Haz clic en el mapa para agregar puntos al polígono' 
+            {activeTab === 'polygons' && isDrawing
+              ? 'Haz clic en el mapa para agregar puntos al polígono'
               : activeTab === 'distribute' && distributionMode === 'single' && selectedNFTs.length > 0
               ? 'Haz clic en el mapa para distribuir NFTs'
               : activeTab === 'distribute' && distributionMode === 'polygon' && selectedNFTs.length > 0
@@ -798,7 +811,7 @@ export default function TreasureZoneImproved() {
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-3">
               <button
                 onClick={() => distributeNFTsAtLocation(pendingClickLocation)}
@@ -812,7 +825,7 @@ export default function TreasureZoneImproved() {
                 )}
                 {loading ? 'Distribuyendo...' : 'Confirmar'}
               </button>
-              
+
               <button
                 onClick={() => {
                   setPendingClickLocation(null)
